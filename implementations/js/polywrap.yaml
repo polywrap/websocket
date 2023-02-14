@@ -1,0 +1,11 @@
+format: 0.3.0
+project:
+  type: plugin/typescript
+  name: Ws
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql
+  import_abis:
+    - uri: "wrap://ens/wrappers.polywrap.eth:web-socket@1.0.0"
+      abi: ../../interface/build/wrap.info
+
