@@ -1,9 +1,6 @@
 format: 0.3.0
 project:
-  name: web-socket-interface
+  name: websocket-interface
   type: interface
 source:
-  schema: ./src/schema.graphql
-extensions:
-  deploy: ./polywrap.deploy.yaml
-resources: ./resources
+  schema: ./polywrap.graphql

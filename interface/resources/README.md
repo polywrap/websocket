@@ -1,81 +1,83 @@
-# WebSocket Wrapper Interface
+# Datetime Wrapper Interface
 
 | Version | URI | WRAP Version |
 |-|-|-|
-| 1.0.0 | [`wrap://ens/wrappers.polywrap.eth:web-socket@1.0.0`](https://wrappers.io/v/ens/wrappers.polywrap.eth:web-socket@1.0.0) | 0.1 |
+| 1.0.0 | [`wrap://ens/wraps.eth:websocket@1.0.0`](https://wrappers.io/v/ens/wraps.eth:websocket@1.0.0) | 0.1 |
 
 ## Interface
 ```graphql
-"""Subset of JS MessageEvent interface"""
+type Module {
+    open(url: String!, protocols: [String], timeout: UInt32): Connection!
+    close(id: UInt32!, code: Int, reason: String): Boolean!
+    send(id: UInt32!, message: String!): Boolean!
+    sendBinary(id: UInt32!, message: Bytes!): Boolean!
+    setOnMessage(id: UInt32!, callback: Callback!): Boolean!
+    setOnClose(id: UInt32!, callback: Callback!): Boolean!
+    setOnError(id: UInt32!, callback: Callback!): Boolean!
+    addCache(id: UInt32!): Boolean!
+    removeCache(id: UInt32!): Boolean!
+    receive(id: UInt32!, min: UInt32, timeout: UInt32): [Message!]!
+    getReadyState(id: UInt32!): ConnectionState!
+    getConnection(id: UInt32!): Connection
+}
+
+type Connection {
+    id: UInt!
+    url: String!
+    state: ConnectionState!
+    subprotocol: String
+    extensions: [String]
+    closeCode: Int
+    closeReason: String
+}
+
+enum ConnectionState {
+    CONNECTING
+    OPEN
+    CLOSING
+    CLOSED
+}
+
 type Message {
     data: String!
     origin: String!
-    lastEventId: String!
+    timeStamp: String!
+    isBinary: Boolean!
+    lastEventId: String
+    binaryData: Bytes
+    extensionData: String
+}
+
+type CloseEvent {
+    code: Int!
+    reason: String!
+    wasClean: Boolean!
+    timeStamp: String!
+}
+
+type ErrorEvent {
+    message: String!
+    filename: String
+    lineno: Int
+    colno: Int
+    timeStamp: String!
 }
 
 type Callback {
-    """WRAP Module URI"""
     uri: String!
-    """WRAP Module Method"""
     method: String!
-}
-
-type Module {
-    """
-    create a socket with id, can return after `timeout`
-    if the server is not responding. Returns the socket `id`
-    """
-    open(url: String!, timeout: UInt32): UInt32!
-
-    """
-    close socket `id`
-    """
-    close(id: UInt32!): Boolean!
-
-    """
-    send message via socket `id`
-    """
-    send(id: UInt32!, message: String!): Boolean!
-
-    """
-    send all messages to callback for socket `id`
-    """
-    addCallback(id: UInt32!, callback: Callback!): Boolean!
-
-    """
-    stop sending messages to callback for socket `id`
-    """
-    removeCallback(id: UInt32!, callback: Callback!): Boolean!
-
-    """
-    save messages to ws plugin cache for socket `id`
-    """
-    addCache(id: UInt32!): Boolean!
-
-    """
-    stop caching messages for socket `id`
-    """
-    removeCache(id: UInt32!): Boolean!
-
-    """
-    get messages and flush cache,
-    can wait until receives `min` events or reaches `timeout`
-    """
-    receive(id: UInt32!, min: UInt32, timeout: UInt32): [Message!]!
 }
 ```
 
 ## Usage
 ```graphql
-#import { Module } into WebSocket from "ens/wrappers.polywrap.eth:web-socket@1.0.0"
-
-type Module implements WebSocket_Module {}
+#import * from "ens/wraps.eth:websocket@1.0.0"
 ```
 
 And implement the interface methods within your programming language of choice.
 
 ## Source Code
-[Link](https://github.com/polywrap/WebSocket)
+[Link](https://github.com/polywrap/std/websocket)
 
 ## Known Implementations
-[Link](https://github.com/polywrap/WebSocket/tree/master/implementations)
+[Link](https://github.com/polywrap/websocket/tree/master/implementations)
