@@ -1,0 +1,225 @@
+type Module {
+    """
+    Create a socket with id. Can return after `timeout` if the server is not responding. Returns the socket `id`.
+    """
+    open(url: String!, protocols: [String], timeout: UInt32): Connection!
+
+    """
+    Close socket `id`, optionally with a status code and reason.
+    """
+    close(id: UInt32!, code: Int, reason: String): Boolean!
+
+    """
+    Send message via socket `id`.
+    """
+    send(id: UInt32!, message: String!): Boolean!
+
+    """
+    Send a binary message via socket `id`.
+    """
+    sendBinary(id: UInt32!, message: Bytes!): Boolean!
+
+    """
+    Register a callback to be called when a message is received on socket `id`.
+    """
+    setOnMessage(id: UInt32!, callback: Callback!): Boolean!
+
+    """
+    Register a callback to be called when socket `id` is closed.
+    """
+    setOnClose(id: UInt32!, callback: Callback!): Boolean!
+
+    """
+    Register a callback to be called when an error occurs on socket `id`.
+    """
+    setOnError(id: UInt32!, callback: Callback!): Boolean!
+
+    """
+    Save messages to ws plugin cache for socket `id`.
+    """
+    addCache(id: UInt32!): Boolean!
+
+    """
+    Stop caching messages for socket `id`.
+    """
+    removeCache(id: UInt32!): Boolean!
+
+    """
+    Get messages and flush cache. Can wait until receives `min` events or reaches `timeout`.
+    """
+    receive(id: UInt32!, min: UInt32, timeout: UInt32): [Message!]!
+
+    """
+    Check the readyState of the WebSocket. Returns 0 for CONNECTING, 1 for OPEN, 2 for CLOSING, and 3 for CLOSED.
+    """
+    getReadyState(id: UInt32!): ConnectionState!
+
+    """
+    Get the Connection associated with the connection ID, or null if no connection with that ID is found
+    """
+    getConnection(id: UInt32!): Connection
+}
+
+type Connection {
+    """
+    The connection ID
+    """
+    id: UInt!
+
+    """
+    This represents the URL of the WebSocket server.
+    """
+    url: String!
+
+    """
+    This represents the current state of the WebSocket connection.
+    """
+    state: ConnectionState!
+
+    """
+    This represents the subprotocol selected by the server.
+    """
+    subprotocol: String
+
+    """
+    These are the extensions selected by the server.
+    """
+    extensions: [String]
+
+    """
+    This represents the close code when the connection is closed.
+    """
+    closeCode: Int
+
+    """
+    This represents the close reason when the connection is closed.
+    """
+    closeReason: String
+}
+
+enum ConnectionState {
+    """
+    The connection is not yet open.
+    """
+    CONNECTING
+
+    """
+    The connection is open and ready to communicate.
+    """
+    OPEN
+
+    """
+    The connection is in the process of closing.
+    """
+    CLOSING
+
+    """
+    The connection is closed or couldn't be opened.
+    """
+    CLOSED
+}
+
+"""
+A WebSocket Message
+"""
+type Message {
+    """
+    The data sent by the server.
+    """
+    data: String!
+
+    """
+    The origin of the server that sent the message.
+    """
+    origin: String!
+
+    """
+    The timestamp at which the message was created.
+    """
+    timeStamp: String!
+
+    """
+    Indicates whether the message data is binary.
+    """
+    isBinary: Boolean!
+
+    """
+    The id of the last event, if server-sent events are used.
+    """
+    lastEventId: String
+
+    """
+    The binary data sent by the server, if any.
+    """
+    binaryData: Bytes
+
+    """
+    The extension data sent by the server, if any.
+    """
+    extensionData: String
+}
+
+"""Information about a close event"""
+type CloseEvent {
+    """
+    The close code provided by the server.
+    """
+    code: Int!
+
+    """
+    The reason for closure provided by the server.
+    """
+    reason: String!
+
+    """
+    Indicates whether or not the connection was closed cleanly.
+    """
+    wasClean: Boolean!
+
+    """
+    The timestamp at which the event was created.
+    """
+    timeStamp: String!
+}
+
+"""Information about an error event"""
+type ErrorEvent {
+    """
+    The error message.
+    """
+    message: String!
+
+    """
+    The name of the file in which the error occurred, if available.
+    """
+    filename: String
+
+    """
+    The line number in the file where the error occurred, if available.
+    """
+    lineno: Int
+
+    """
+    The column number in the line of the file where the error occurred, if available.
+    """
+    colno: Int
+
+    """
+    The timestamp at which the error event was created.
+    """
+    timeStamp: String!
+}
+
+""" A callback """
+type Callback {
+    """
+    The URI of the WRAP module.
+    """
+    uri: String!
+
+    """
+    The method of the WRAP module.
+    """
+    method: String!
+}
+
